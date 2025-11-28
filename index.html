@@ -1,197 +1,897 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FoodieExpress | Zomato Theme</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<style>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    'primary-red': '#E23744',
-                    'secondary-orange': '#F87171',
-                    'dark-bg': '#1B1B1B',
-                    'dark-card': '#2C2C2C'
-                },
-                fontFamily: { sans: ['Inter', 'sans-serif'] }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieExpress | Online Food Delivery (INR)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Tailwind Configuration - ZOMATO/SWIGGY THEME */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-red': '#e53857', /* Vibrant Zomato Red/Pink */
+                        'secondary-highlight': '#f59e0b', /* Gold/Orange for accents */
+                        'light-bg': '#f8f8f8', /* Clean background */
+                        'dark-bg': '#111827', /* Dark mode background */
+                        'dark-card': '#1f2937', /* Dark mode card */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        pulseBg: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.5 },
+                        }
+                    },
+                    animation: {
+                        slideIn: 'slideIn 0.5s ease-out',
+                        pulseBg: 'pulseBg 1.5s ease-in-out infinite',
+                    }
+                }
             }
         }
-    }
-    body { font-family: 'Inter', sans-serif; transition: background-color 0.3s; background-color: #FFF5F5; }
-    .dark body { background-color: #1B1B1B; color: #fff; }
-</style>
+
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Light gray background */
+            transition: background-color 0.3s;
+        }
+
+        .dark body {
+            background-color: #111827;
+        }
+
+        /* Header shadow change */
+        .sticky-header {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+        .dark .sticky-header {
+             box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.05), 0 2px 4px -2px rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Custom scrollbar for menu/cart on mobile */
+        @media (max-width: 768px) {
+            .menu-scroll-area, .cart-scroll-area {
+                max-height: calc(100vh - 200px); 
+                overflow-y: auto;
+            }
+        }
+    </style>
 </head>
-<body class="transition-colors duration-300">
-<div id="app" class="min-h-screen">
+<body class="">
 
-<!-- Header -->
-<header class="sticky top-0 bg-white dark:bg-dark-bg shadow-md z-40">
-    <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
-        <button onclick="App.setView('home')" class="text-2xl font-bold text-primary-red hover:text-secondary-orange transition duration-200">
-            <i class="fas fa-motorcycle mr-1"></i> FoodieExpress
-        </button>
-        <div class="flex items-center space-x-4">
-            <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
-                <i id="darkModeIcon" class="fas fa-moon"></i>
-            </button>
-            <button onclick="App.setView('cart')" class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
-                <i class="fas fa-shopping-cart text-lg"></i>
-                <span id="cartCount" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-secondary-orange rounded-full">0</span>
-            </button>
-            <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
-                <i class="fas fa-user-circle text-xl"></i>
-            </button>
-        </div>
-    </div>
-</header>
+    <!-- Main Application Container -->
+    <div id="app" class="min-h-screen">
+        <!-- Header -->
+        <header class="sticky-header sticky top-0 z-40 bg-white dark:bg-dark-card shadow-lg transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+                <!-- Logo/Home Button -->
+                <button onclick="App.setView('home')" class="text-2xl font-extrabold text-primary-red hover:text-secondary-highlight transition duration-200">
+                    <i class="fas fa-utensils mr-1"></i> FoodieExpress
+                </button>
 
-<!-- Main Container -->
-<main id="app-container" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="text-center py-16">
-        <i class="fas fa-spinner fa-spin text-4xl text-primary-red"></i>
-        <p class="mt-4 text-gray-600 dark:text-gray-400">Loading FoodieExpress...</p>
-    </div>
-</main>
-
-<!-- Order Confirmation Modal -->
-<div id="orderConfirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card p-8 rounded-xl shadow-2xl max-w-sm w-full text-center transform transition-all scale-100">
-        <i class="fas fa-check-circle text-green-500 text-6xl mb-4 animate-bounce"></i>
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Order Placed Successfully!</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">Your order will be delivered shortly.</p>
-        <button onclick="App.setView('track'); closeModal('orderConfirmationModal');" class="w-full bg-secondary-orange text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition duration-200 shadow-md">
-            Track Your Order
-        </button>
-    </div>
-</div>
-</div>
-
-<script>
-const USD_TO_INR = 85; // Conversion
-function formatINR(amount){ return `₹${amount.toFixed(0)}`; }
-
-const RESTAURANTS_DATA = [
-    {id:1, name:"The Pizza Planet", cuisine:"Italian, Pizza", rating:4.5, time:"30-40 min", offer:"20% OFF", imageUrl:"https://placehold.co/100x100/f87171/ffffff?text=Pizza", minOrder:15*USD_TO_INR, deliveryFee:3*USD_TO_INR },
-    {id:2, name:"Biryani House", cuisine:"Indian, Mughlai", rating:4.8, time:"25-35 min", offer:"Free Delivery", imageUrl:"https://placehold.co/100x100/f59e0b/ffffff?text=Biryani", minOrder:10*USD_TO_INR, deliveryFee:0 },
-    {id:3, name:"Burger King", cuisine:"Fast Food, American", rating:4.2, time:"45-55 min", offer:"Buy 1 Get 1", imageUrl:"https://placehold.co/100x100/34d399/ffffff?text=Burger", minOrder:8*USD_TO_INR, deliveryFee:2.5*USD_TO_INR },
-];
-
-const MENU_DATA = {
-    1: [
-        {id:101, name:"Pepperoni Passion", price:12.99*USD_TO_INR, desc:"Classic pizza with spicy pepperoni and mozzarella.", imageUrl:"https://placehold.co/50x50/ef4444/ffffff?text=P1"},
-        {id:102, name:"Margherita Gold", price:9.50*USD_TO_INR, desc:"Basil, tomato, fresh mozzarella.", imageUrl:"https://placehold.co/50x50/f97316/ffffff?text=P2"},
-        {id:103, name:"Veggie Delight", price:11.50*USD_TO_INR, desc:"Bell peppers, olives, and onion.", imageUrl:"https://placehold.co/50x50/f59e0b/ffffff?text=P3"},
-    ],
-    2: [
-        {id:201, name:"Chicken Hyderabadi Biryani", price:15.99*USD_TO_INR, desc:"Layered rice with tender chicken.", imageUrl:"https://placehold.co/50x50/10b981/ffffff?text=B1"},
-        {id:202, name:"Mutton Dum Biryani", price:17.99*USD_TO_INR, desc:"Slow-cooked mutton biryani.", imageUrl:"https://placehold.co/50x50/34d399/ffffff?text=B2"},
-        {id:203, name:"Veg Korma", price:10.50*USD_TO_INR, desc:"Creamy vegetable curry.", imageUrl:"https://placehold.co/50x50/60a5fa/ffffff?text=B3"},
-    ]
-};
-
-const App = {
-    currentView:'home',
-    cart:[],
-    setView(view){
-        this.currentView = view;
-        this.render();
-    },
-    addToCart(item){
-        const found = this.cart.find(i=>i.id===item.id);
-        if(found){ found.qty++; } else { this.cart.push({...item, qty:1}); }
-        this.updateCartCount();
-        alert(`${item.name} added to cart!`);
-    },
-    removeFromCart(id){
-        this.cart = this.cart.filter(i=>i.id!==id);
-        this.updateCartCount();
-        this.render();
-    },
-    updateCartCount(){ document.getElementById('cartCount').innerText=this.cart.reduce((a,b)=>a+b.qty,0); },
-    clearCart(){ this.cart=[]; this.updateCartCount(); this.setView('home'); },
-    render(){
-        const container=document.getElementById('app-container');
-        if(this.currentView==='home'){
-            container.innerHTML = '<div class="grid md:grid-cols-3 gap-6">';
-            RESTAURANTS_DATA.forEach(r=>{
-                container.innerHTML += `
-                <div class="bg-white dark:bg-dark-card shadow-md rounded-lg p-4 cursor-pointer hover:shadow-xl transition duration-200" onclick="App.setView('menu-${r.id}')">
-                    <img src="${r.imageUrl}" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">${r.name}</h3>
-                    <p class="text-gray-600 dark:text-gray-400">${r.cuisine}</p>
-                    <p class="text-sm mt-1">⭐ ${r.rating} • ${r.time} • Min ${formatINR(r.minOrder)}</p>
-                    <span class="text-primary-red font-semibold">${r.offer}</span>
-                </div>`;
-            });
-            container.innerHTML += '</div>';
-        } else if(this.currentView.startsWith('menu-')){
-            const id = parseInt(this.currentView.split('-')[1]);
-            const restaurant = RESTAURANTS_DATA.find(r=>r.id===id);
-            const menu = MENU_DATA[id];
-            container.innerHTML = `<button onclick="App.setView('home')" class="mb-4 text-primary-red font-semibold"><i class="fas fa-arrow-left"></i> Back</button>`;
-            container.innerHTML += `<h2 class="text-2xl font-bold mb-4">${restaurant.name}</h2>`;
-            container.innerHTML += '<div class="grid md:grid-cols-2 gap-4">';
-            menu.forEach(item=>{
-                container.innerHTML += `
-                <div class="bg-white dark:bg-dark-card p-4 rounded-lg shadow-md flex justify-between items-center">
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">${item.name}</h3>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm">${item.desc}</p>
-                        <p class="mt-1 font-bold text-primary-red">${formatINR(item.price)}</p>
-                    </div>
-                    <button onclick="App.addToCart(${JSON.stringify(item)})" class="bg-primary-red text-white px-4 py-2 rounded-lg hover:bg-secondary-orange transition duration-200">Add</button>
-                </div>`;
-            });
-            container.innerHTML += '</div>';
-        } else if(this.currentView==='cart'){
-            container.innerHTML = `<h2 class="text-2xl font-bold mb-4">Your Cart</h2>`;
-            if(this.cart.length===0){
-                container.innerHTML += '<p class="text-gray-600 dark:text-gray-400">Cart is empty!</p>';
-                return;
-            }
-            container.innerHTML += '<div class="space-y-4">';
-            let total=0;
-            this.cart.forEach(item=>{
-                total+=item.price*item.qty;
-                container.innerHTML += `
-                <div class="bg-white dark:bg-dark-card p-4 rounded-lg flex justify-between items-center">
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">${item.name} x${item.qty}</h3>
-                        <p class="text-primary-red font-bold">${formatINR(item.price*item.qty)}</p>
-                    </div>
-                    <button onclick="App.removeFromCart(${item.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
-                </div>`;
-            });
-            container.innerHTML += `
-                <div class="mt-4 flex justify-between items-center">
-                    <span class="font-bold text-lg">Total:</span>
-                    <span class="font-bold text-lg text-primary-red">${formatINR(total)}</span>
+                <!-- Navigation/Action Icons -->
+                <div class="flex items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                        <i id="darkModeIcon" class="fas fa-moon"></i>
+                    </button>
+                    <!-- Cart Button -->
+                    <button onclick="App.setView('cart')" class="relative p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span id="cartCount" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary-red rounded-full">0</span>
+                    </button>
+                    <!-- Profile Icon -->
+                    <button class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </button>
                 </div>
-                <button onclick="App.placeOrder()" class="mt-4 w-full bg-secondary-orange text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 shadow-md">Place Order</button>`;
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="app-container" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+            <!-- Content will be rendered here by JavaScript -->
+            <div class="text-center py-16">
+                <i class="fas fa-spinner fa-spin text-4xl text-primary-red"></i>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">Loading FoodieExpress...</p>
+            </div>
+        </main>
+        
+        <!-- Order Confirmation Modal -->
+        <div id="orderConfirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-sm w-full text-center transform transition-all scale-100">
+                <i class="fas fa-check-circle text-green-500 text-6xl mb-4 animate-bounce"></i>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Order Placed Successfully!</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">Your order is accepted and will be delivered shortly.</p>
+                <button onclick="App.setView('track'); closeModal('orderConfirmationModal');" class="w-full bg-secondary-highlight text-white py-3 rounded-xl font-semibold hover:bg-yellow-600 transition duration-200 shadow-md">
+                    Track Your Order
+                </button>
+            </div>
+        </div>
+        
+        <!-- Notification Placeholder (used by JS for error messages) -->
+        <div id="notification-area" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    </div>
+
+    <script>
+        // --- DATA LAYER ---
+        // Note: Prices are conceptual and adjusted to be realistic in INR scale for this demo (e.g., $10 -> ₹499)
+        const RESTAURANTS_DATA = [
+            { id: 1, name: "The Pizza Planet", cuisine: "Italian, Pizza", rating: 4.5, time: "30-40 min", offer: "20% OFF", imageUrl: "https://placehold.co/100x100/e53857/ffffff?text=Pizza", minOrder: 700, deliveryFee: 50 },
+            { id: 2, name: "Biryani House", cuisine: "Indian, Mughlai", rating: 4.8, time: "25-35 min", offer: "Free Delivery", imageUrl: "https://placehold.co/100x100/f59e0b/ffffff?text=Biryani", minOrder: 500, deliveryFee: 0 },
+            { id: 3, name: "Burger King", cuisine: "Fast Food, American", rating: 4.2, time: "45-55 min", offer: "Buy 1 Get 1", imageUrl: "https://placehold.co/100x100/34d399/ffffff?text=Burger", minOrder: 400, deliveryFee: 40 },
+            { id: 4, name: "Sweet Delights", cuisine: "Desserts, Bakery", rating: 4.6, time: "20-30 min", offer: "10% OFF", imageUrl: "https://placehold.co/100x100/f9a8d4/ffffff?text=Desserts", minOrder: 600, deliveryFee: 60 },
+            { id: 5, name: "Healthy Bowl", cuisine: "Salad, Vegan", rating: 4.1, time: "35-45 min", offer: "New Arrival", imageUrl: "https://placehold.co/100x100/60a5fa/ffffff?text=Salad", minOrder: 700, deliveryFee: 80 },
+        ];
+
+        const MENU_DATA = {
+            1: [ // Pizza Planet
+                { id: 101, name: "Pepperoni Passion", price: 499.00, desc: "Classic pizza with spicy pepperoni and mozzarella.", imageUrl: "https://placehold.co/50x50/e53857/ffffff?text=P1" },
+                { id: 102, name: "Margherita Gold", price: 350.00, desc: "Simple yet perfect, basil, tomato, and fresh mozzarella.", imageUrl: "https://placehold.co/50x50/f59e0b/ffffff?text=P2" },
+                { id: 103, name: "Veggie Delight", price: 425.00, desc: "Loaded with fresh bell peppers, olives, and onion.", imageUrl: "https://placehold.co/50x50/34d399/ffffff?text=P3" },
+            ],
+            2: [ // Biryani House
+                { id: 201, name: "Chicken Hyderabadi Biryani", price: 599.00, desc: "Layered rice dish with tender chicken pieces.", imageUrl: "https://placehold.co/50x50/10b981/ffffff?text=B1" },
+                { id: 202, name: "Mutton Dum Biryani", price: 699.00, desc: "Rich and slow-cooked mutton biryani.", imageUrl: "https://placehold.co/50x50/34d399/ffffff?text=B2" },
+                { id: 203, name: "Veg Korma", price: 399.00, desc: "Creamy vegetable curry, perfect with rice.", imageUrl: "https://placehold.co/50x50/60a5fa/ffffff?text=B3" },
+            ],
+        };
+
+        // --- APP STATE MANAGEMENT ---
+        const App = {
+            state: {
+                currentView: 'home',
+                currentRestaurantId: null,
+                cart: loadCart(), 
+                orderStatus: 'accepted',
+                searchQuery: '',
+                isDarkMode: false
+            },
+            
+            currencySymbol: '₹', // New: Define INR symbol here
+
+            init() {
+                // Check and set Dark Mode
+                this.state.isDarkMode = localStorage.getItem('darkMode') === 'true';
+                document.body.classList.toggle('dark', this.state.isDarkMode);
+                this.updateDarkModeIcon();
+
+                // Setup Dark Mode Toggle Listener
+                document.getElementById('darkModeToggle').addEventListener('click', this.toggleDarkMode.bind(this));
+
+                // Initial render
+                this.updateCartCount();
+                this.render();
+            },
+            
+            toggleDarkMode() {
+                this.state.isDarkMode = !this.state.isDarkMode;
+                localStorage.setItem('darkMode', this.state.isDarkMode);
+                document.body.classList.toggle('dark', this.state.isDarkMode);
+                this.updateDarkModeIcon();
+                this.render(); 
+            },
+
+            updateDarkModeIcon() {
+                const iconElement = document.getElementById('darkModeIcon');
+                if (iconElement) {
+                    iconElement.className = this.state.isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            },
+
+            setView(view, id = null) {
+                this.state.currentView = view;
+                this.state.currentRestaurantId = id;
+                this.render();
+                window.scrollTo(0, 0); 
+            },
+
+            render() {
+                const container = document.getElementById('app-container');
+                let html = '';
+
+                switch (this.state.currentView) {
+                    case 'home':
+                        html = this.renderHome();
+                        break;
+                    case 'restaurants':
+                        html = this.renderRestaurants();
+                        break;
+                    case 'menu':
+                        html = this.renderMenu(this.state.currentRestaurantId);
+                        break;
+                    case 'cart':
+                        html = this.renderCart();
+                        break;
+                    case 'checkout':
+                        html = this.renderCheckout();
+                        break;
+                    case 'track':
+                        html = this.renderTrackOrder();
+                        break;
+                    default:
+                        html = `<div class="text-center py-16 text-gray-500">View not found.</div>`;
+                }
+
+                container.innerHTML = html;
+                this.updateCartCount();
+
+                if (this.state.currentView === 'track') {
+                    this.startOrderTrackingAnimation();
+                }
+            },
+
+            // --- VIEW RENDERERS ---
+
+            renderHome() {
+                return `
+                    <!-- Hero Section -->
+                    <section class="bg-primary-red dark:bg-dark-card rounded-xl shadow-xl p-8 mb-12 flex flex-col md:flex-row items-center justify-between">
+                        <div class="md:w-1/2 mb-6 md:mb-0">
+                            <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
+                                Delivering Food You Love!
+                            </h1>
+                            <p class="text-white text-opacity-90 mb-6">
+                                Order from top restaurants and get your meal delivered fast.
+                            </p>
+                            <!-- Search Bar -->
+                            <div class="relative max-w-lg">
+                                <input type="text" id="home-search-input" placeholder="Search for restaurants or food..."
+                                    class="w-full p-3 pl-12 rounded-lg border-2 border-secondary-highlight focus:ring-secondary-highlight focus:border-secondary-highlight text-gray-800 dark:bg-gray-700 transition duration-300 shadow-inner">
+                                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <button onclick="App.searchRestaurants()" class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-secondary-highlight text-white p-2 rounded-lg h-10 w-10 hover:bg-yellow-600 transition duration-200">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 flex justify-center">
+                            <img src="https://placehold.co/250x250/e53857/ffffff?text=Delivery+Hero" alt="Delivery illustration" class="rounded-full shadow-2xl hidden md:block w-48 h-48 sm:w-64 sm:h-64 object-cover">
+                        </div>
+                    </section>
+
+                    <!-- Popular Categories -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Popular Categories</h2>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            ${this.renderCategoryCard('Pizza', 'fas fa-pizza-slice', '#f87171')}
+                            ${this.renderCategoryCard('Biryani', 'fas fa-drumstick-bite', '#f59e0b')}
+                            ${this.renderCategoryCard('Burgers', 'fas fa-hamburger', '#34d399')}
+                            ${this.renderCategoryCard('Desserts', 'fas fa-ice-cream', '#f9a8d4')}
+                        </div>
+                    </section>
+
+                    <!-- Featured Restaurants -->
+                    <section>
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Top Restaurants</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${RESTAURANTS_DATA.slice(0, 3).map(r => this.renderRestaurantCard(r)).join('')}
+                        </div>
+                        <div class="text-center mt-8">
+                            <button onclick="App.setView('restaurants')" class="text-primary-red font-semibold hover:text-secondary-highlight transition duration-200">
+                                View All Restaurants <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </section>
+                `;
+            },
+
+            renderCategoryCard(name, icon, color) {
+                return `
+                    <div onclick="App.searchRestaurants('${name}')" class="bg-white dark:bg-dark-card p-4 rounded-xl shadow-lg flex flex-col items-center hover:shadow-xl transform hover:scale-[1.02] transition duration-300 cursor-pointer border border-transparent hover:border-primary-red">
+                        <div class="text-3xl p-4 rounded-full text-white mb-3" style="background-color: ${color};">
+                            <i class="${icon}"></i>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-800 dark:text-white">${name}</p>
+                    </div>
+                `;
+            },
+
+            searchRestaurants(query = null) {
+                const searchInput = document.getElementById('home-search-input');
+                this.state.searchQuery = query || searchInput.value;
+                this.setView('restaurants');
+            },
+
+            renderRestaurants() {
+                const filtered = RESTAURANTS_DATA.filter(r => 
+                    r.name.toLowerCase().includes(this.state.searchQuery.toLowerCase()) || 
+                    r.cuisine.toLowerCase().includes(this.state.searchQuery.toLowerCase())
+                );
+
+                return `
+                    <section class="mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Restaurants Near You</h2>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">${filtered.length} results found for "${this.state.searchQuery || 'all'}"</p>
+                        
+                        <!-- Search Bar for Restaurant Page -->
+                        <div class="relative max-w-2xl mx-auto mb-8">
+                            <input type="text" id="restaurant-search-input" value="${this.state.searchQuery}" oninput="App.filterRestaurants(this.value)"
+                                class="w-full p-3 pl-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 focus:ring-primary-red focus:border-primary-red text-gray-800 dark:bg-gray-700 dark:text-white transition duration-300 shadow-inner"
+                                placeholder="Filter results...">
+                            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${filtered.length > 0 ? filtered.map(r => this.renderRestaurantCard(r)).join('') : 
+                                '<p class="text-center text-gray-500 col-span-full py-10">No restaurants found matching your criteria.</p>'
+                            }
+                        </div>
+                    </section>
+                `;
+            },
+
+            filterRestaurants(query) {
+                this.state.searchQuery = query;
+                this.render(); 
+            },
+
+            renderRestaurantCard(r) {
+                return `
+                    <div onclick="App.setView('menu', ${r.id})" class="bg-white dark:bg-dark-card rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-[1.02] transition duration-300 cursor-pointer border border-gray-100 dark:border-gray-700">
+                        <div class="h-40 bg-cover bg-center relative" style="background-image: url('${r.imageUrl.replace('100x100', '400x200')}');">
+                            <span class="absolute top-3 left-3 bg-primary-red text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">${r.offer}</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white truncate">${r.name}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">${r.cuisine}</p>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="flex items-center text-green-600 font-semibold">
+                                    <i class="fas fa-star mr-1"></i> ${r.rating}
+                                </div>
+                                <div class="text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-clock mr-1"></i> ${r.time}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderMenu(restaurantId) {
+                const restaurant = RESTAURANTS_DATA.find(r => r.id === restaurantId);
+                const menuItems = MENU_DATA[restaurantId] || [];
+
+                if (!restaurant) {
+                    return `<p class="text-center py-16 text-gray-500">Restaurant not found.</p>`;
+                }
+
+                return `
+                    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Column: Menu Items -->
+                        <div class="lg:col-span-2 menu-scroll-area">
+                            <button onclick="App.setView('restaurants')" class="mb-4 text-primary-red hover:text-secondary-highlight transition duration-200">
+                                <i class="fas fa-arrow-left mr-2"></i> Back to Restaurants
+                            </button>
+                            <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 mb-8">
+                                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">${restaurant.name}</h1>
+                                <p class="text-gray-600 dark:text-gray-400 mb-2">${restaurant.cuisine} | <i class="fas fa-star text-green-500"></i> ${restaurant.rating}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">${restaurant.time} Delivery Time</p>
+                            </div>
+                            
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Recommended Dishes</h2>
+                            
+                            ${menuItems.length > 0 ? menuItems.map(item => this.renderMenuItem(item, restaurantId)).join('') : 
+                                '<p class="text-center text-gray-500 py-10 dark:text-gray-400">No menu items available yet.</p>'
+                            }
+                        </div>
+
+                        <!-- Right Column: Sticky Cart Preview (visible on desktop) -->
+                        <div class="lg:sticky lg:top-20 h-fit lg:col-span-1">
+                            ${this.renderCartPreview(restaurant)}
+                        </div>
+                    </section>
+                `;
+            },
+
+            renderMenuItem(item, restaurantId) {
+                const cartItem = this.state.cart[item.id];
+                const quantity = cartItem ? cartItem.quantity : 0;
+                
+                return `
+                    <div class="bg-white dark:bg-dark-card p-4 rounded-xl shadow-md mb-4 flex justify-between items-center transition duration-200 hover:shadow-lg border-l-4 border-primary-red">
+                        <div class="flex items-center">
+                            <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover mr-4">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${item.name}</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 truncate w-48">${item.desc}</p>
+                                <!-- CURRENCY CHANGE: USD to INR -->
+                                <p class="text-lg font-bold text-primary-red mt-1">${this.currencySymbol}${item.price.toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <!-- Add to Cart/Quantity Controls -->
+                        <div class="flex flex-col items-center space-y-2 w-24">
+                            ${quantity > 0 ? `
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="App.updateCartQuantity(${item.id}, -1)" class="w-6 h-6 bg-primary-red text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600 transition">-</button>
+                                    <span class="font-bold text-gray-900 dark:text-white">${quantity}</span>
+                                    <button onclick="App.updateCartQuantity(${item.id}, 1)" class="w-6 h-6 bg-primary-red text-white rounded-full text-sm flex items-center justify-center hover:bg-red-600 transition">+</button>
+                                </div>
+                            ` : `
+                                <button onclick="App.addToCart({ id: ${item.id}, name: '${item.name}', price: ${item.price}, restaurantId: ${restaurantId} })" 
+                                    class="bg-secondary-highlight text-white text-xs font-semibold px-3 py-1 rounded-full hover:bg-yellow-600 transition shadow-md">
+                                    Add <i class="fas fa-plus ml-1"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderCartPreview(restaurant) {
+                const items = Object.values(this.state.cart);
+                const total = this.calculateCartTotal();
+
+                return `
+                    <div class="bg-white dark:bg-dark-card p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <i class="fas fa-shopping-basket text-primary-red mr-2"></i> Your Cart
+                            <span class="ml-auto text-sm text-gray-500 dark:text-gray-400">(${items.length} items)</span>
+                        </h3>
+                        
+                        ${items.length === 0 ? `
+                            <div class="text-center py-8">
+                                <i class="fas fa-box-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                <p class="text-gray-500 dark:text-gray-400">Your basket is empty!</p>
+                            </div>
+                        ` : `
+                            <div class="space-y-4 cart-scroll-area">
+                                ${items.map(item => `
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900 dark:text-white">${item.quantity}x ${item.item.name}</p>
+                                            <!-- CURRENCY CHANGE: USD to INR -->
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">${this.currencySymbol}${(item.item.price * item.quantity).toFixed(2)}</p>
+                                        </div>
+                                        <button onclick="App.updateCartQuantity(${item.item.id}, -1)" class="text-primary-red hover:text-red-600 transition duration-200 text-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div class="border-t border-dashed border-gray-200 dark:border-gray-700"></div>
+                                `).join('')}
+                            </div>
+                            
+                            <!-- Subtotal -->
+                            <div class="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
+                                <div class="flex justify-between font-semibold text-xl text-gray-900 dark:text-white">
+                                    <span>Total:</span>
+                                    <!-- CURRENCY CHANGE: USD to INR -->
+                                    <span class="text-primary-red">${this.currencySymbol}${total.toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            <button onclick="App.setView('cart')" class="w-full mt-6 bg-primary-red text-white py-3 rounded-xl font-semibold hover:bg-red-600 transition duration-200 shadow-md">
+                                View Full Cart
+                            </button>
+                        `}
+                    </div>
+                `;
+            },
+            
+            renderCart() {
+                const items = Object.values(this.state.cart);
+                const total = this.calculateCartTotal();
+                // Simple fixed delivery fee for demo purposes
+                const deliveryFee = total > 0 ? 50.00 : 0.00; 
+                const grandTotal = total + deliveryFee;
+
+                return `
+                    <section class="max-w-4xl mx-auto">
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Shopping Cart</h2>
+                        
+                        <!-- Cart Items List -->
+                        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 mb-8">
+                            ${items.length === 0 ? `
+                                <div class="text-center py-16">
+                                    <i class="fas fa-shopping-basket text-9xl text-gray-300 dark:text-gray-600 mb-6"></i>
+                                    <h3 class="text-2xl font-semibold text-gray-700 dark:text-gray-300">Your cart is empty!</h3>
+                                    <button onclick="App.setView('restaurants')" class="mt-4 text-primary-red font-semibold hover:text-secondary-highlight transition duration-200">
+                                        Start Ordering <i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="space-y-6">
+                                    ${items.map(item => `
+                                        <div class="flex items-center justify-between border-b pb-4 border-gray-100 dark:border-gray-700 last:border-b-0">
+                                            <!-- Item Info -->
+                                            <div class="flex-1 flex items-center">
+                                                <img src="https://placehold.co/60x60/${this.state.isDarkMode ? '4b5563' : '9ca3af'}/ffffff?text=Food" class="w-14 h-14 rounded-md object-cover mr-4">
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900 dark:text-white">${item.item.name}</h4>
+                                                    <!-- CURRENCY CHANGE: USD to INR -->
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">${this.currencySymbol}${item.item.price.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Quantity Controls -->
+                                            <div class="flex items-center space-x-3 mx-4">
+                                                <button onclick="App.updateCartQuantity(${item.item.id}, -1)" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">-</button>
+                                                <span class="font-bold text-gray-900 dark:text-white">${item.quantity}</span>
+                                                <button onclick="App.updateCartQuantity(${item.item.id}, 1)" class="w-8 h-8 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">+</button>
+                                            </div>
+
+                                            <!-- Subtotal & Remove -->
+                                            <div class="text-right">
+                                                <!-- CURRENCY CHANGE: USD to INR -->
+                                                <p class="font-bold text-lg text-primary-red">${this.currencySymbol}${(item.item.price * item.quantity).toFixed(2)}</p>
+                                                <button onclick="App.removeFromCart(${item.item.id})" class="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 transition">Remove</button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `}
+                        </div>
+                        
+                        <!-- Price Summary -->
+                        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Order Summary</h3>
+                            <div class="space-y-2 text-gray-600 dark:text-gray-300">
+                                <!-- CURRENCY CHANGE: USD to INR -->
+                                <div class="flex justify-between"><span>Item Total:</span><span>${this.currencySymbol}${total.toFixed(2)}</span></div>
+                                <div class="flex justify-between"><span>Delivery Fee:</span><span>${this.currencySymbol}${deliveryFee.toFixed(2)}</span></div>
+                                <div class="flex justify-between font-bold text-xl text-gray-900 dark:text-white pt-2 border-t border-gray-200 dark:border-gray-700">
+                                    <span>Grand Total:</span>
+                                    <span class="text-primary-red">${this.currencySymbol}${grandTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="App.setView('checkout')" class="w-full mt-6 bg-primary-red text-white py-3 rounded-xl font-semibold text-lg hover:bg-red-600 transition duration-200 shadow-md disabled:bg-gray-400" ${items.length === 0 ? 'disabled' : ''}>
+                                Proceed to Checkout (${items.length} items)
+                            </button>
+                        </div>
+
+                    </section>
+                `;
+            },
+            
+            renderCheckout() {
+                const items = Object.values(this.state.cart);
+                const total = this.calculateCartTotal();
+                const deliveryFee = total > 0 ? 50.00 : 0.00;
+                const grandTotal = total + deliveryFee;
+
+                if (items.length === 0) {
+                    return `<p class="text-center py-16 text-primary-red font-semibold">Your cart is empty. Please add items before checking out.</p>`;
+                }
+
+                return `
+                    <section class="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Checkout Form (2/3 width) -->
+                        <div class="lg:col-span-2 bg-white dark:bg-dark-card rounded-xl shadow-lg p-6">
+                            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Checkout Details</h2>
+                            
+                            <!-- Address Form -->
+                            <form id="checkout-form" onsubmit="App.handleCheckout(event)">
+                                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">1. Delivery Address</h3>
+                                <div class="space-y-4 mb-8">
+                                    ${this.renderCheckoutInput('text', 'name', 'Full Name', 'Aakash Sharma', 'required')}
+                                    ${this.renderCheckoutInput('tel', 'phone', 'Phone Number', '98765 43210', 'required')}
+                                    ${this.renderCheckoutInput('text', 'address', 'Street Address', '12/A, Gandhi Nagar, Near Main Road', 'required')}
+                                    ${this.renderCheckoutInput('text', 'city', 'City & Pin Code', 'Mumbai, 400001', 'required')}
+                                    <label class="block">
+                                        <span class="text-gray-700 dark:text-gray-300">Delivery Instructions (Optional)</span>
+                                        <textarea name="instructions" rows="3" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-3 dark:bg-gray-700 dark:text-white focus:ring-primary-red focus:border-primary-red transition"></textarea>
+                                    </label>
+                                </div>
+
+                                <!-- Payment Mockup -->
+                                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">2. Payment Method</h3>
+                                <div class="p-4 border border-secondary-highlight bg-yellow-50 dark:bg-gray-700 rounded-lg shadow-inner mb-6">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="payment" value="cod" checked class="form-radio text-primary-red">
+                                        <span class="ml-2 text-gray-900 dark:text-white font-medium">Cash on Delivery (COD)</span>
+                                    </label>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 ml-6">Payment UI is mocked. All orders will proceed with COD.</p>
+                                </div>
+
+                                <button type="submit" class="w-full bg-primary-red text-white py-3 rounded-xl font-semibold text-lg hover:bg-red-600 transition duration-200 shadow-md">
+                                    Place Order - ${this.currencySymbol}<span id="checkout-grand-total">${grandTotal.toFixed(2)}</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Order Summary (1/3 width) -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-20">
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Your Order</h3>
+                                <div class="space-y-3 border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                    ${items.map(item => `
+                                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                                            <span class="truncate pr-2">${item.quantity}x ${item.item.name}</span>
+                                            <!-- CURRENCY CHANGE: USD to INR -->
+                                            <span>${this.currencySymbol}${(item.item.price * item.quantity).toFixed(2)}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="space-y-2 text-gray-600 dark:text-gray-300">
+                                    <div class="flex justify-between"><span>Item Total:</span><span>${this.currencySymbol}${total.toFixed(2)}</span></div>
+                                    <div class="flex justify-between"><span>Delivery Fee:</span><span>${this.currencySymbol}${deliveryFee.toFixed(2)}</span></div>
+                                    <div class="flex justify-between font-bold text-xl text-gray-900 dark:text-white pt-2 mt-2 border-t border-gray-300 dark:border-gray-600">
+                                        <span>Grand Total:</span>
+                                        <span class="text-primary-red">${this.currencySymbol}${grandTotal.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                `;
+            },
+
+            renderCheckoutInput(type, name, label, placeholder, required = '') {
+                return `
+                    <label class="block">
+                        <span class="text-gray-700 dark:text-gray-300">${label}</span>
+                        <input type="${type}" name="${name}" placeholder="${placeholder}" ${required}
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm p-3 dark:bg-gray-700 dark:text-white focus:ring-primary-red focus:border-primary-red transition">
+                    </label>
+                `;
+            },
+
+            renderTrackOrder() {
+                const status = this.state.orderStatus;
+                const steps = ['accepted', 'preparing', 'on-the-way', 'delivered'];
+                const currentStepIndex = steps.indexOf(status);
+
+                return `
+                    <section class="max-w-3xl mx-auto text-center py-12">
+                        <h2 class="text-3xl font-bold text-primary-red mb-4">Order Tracking</h2>
+                        <p class="text-xl text-gray-700 dark:text-gray-300 mb-10">Status: <span class="font-bold capitalize">${status.replace(/-/g, ' ')}</span></p>
+
+                        <!-- Tracking Steps -->
+                        <div class="relative flex justify-between items-center mb-16">
+                            <!-- Progress Line -->
+                            <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 -z-10 transform -translate-y-1/2 rounded-full">
+                                <div id="progress-bar" class="h-full bg-secondary-highlight transition-all duration-700 ease-in-out rounded-full" style="width: 0%;"></div>
+                            </div>
+                            
+                            ${steps.map((step, index) => {
+                                const isActive = index <= currentStepIndex;
+                                const isCurrent = index === currentStepIndex;
+                                return `
+                                    <div class="flex flex-col items-center">
+                                        <div id="step-${step}" class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl shadow-lg transition-all duration-500 ease-in-out 
+                                            ${isActive ? 'bg-primary-red' : 'bg-gray-300 dark:bg-gray-600'} 
+                                            ${isCurrent ? 'transform scale-110 ring-4 ring-primary-red ring-opacity-50' : ''}">
+                                            <i class="fas ${this.getStepIcon(step)}"></i>
+                                        </div>
+                                        <p class="mt-3 text-sm font-medium ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'} capitalize">${step.replace(/-/g, ' ')}</p>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        <!-- Delivery Illustration -->
+                        <div class="relative w-40 h-40 mx-auto mb-8">
+                            <i id="delivery-icon" class="fas fa-motorcycle text-6xl text-primary-red absolute transition-all duration-700 ease-in-out" 
+                                style="left: ${this.getIconPosition(status)}%; top: 50%; transform: translate(-50%, -50%);"></i>
+                            <img src="https://placehold.co/160x160/f59e0b/ffffff?text=Delivery+Person" alt="Delivery illustration" class="w-full h-full rounded-full object-cover animate-pulseBg opacity-50">
+                        </div>
+                        
+                        <div id="status-message" class="text-xl font-medium text-gray-800 dark:text-gray-200 h-10">
+                            ${this.getStepMessage(status)}
+                        </div>
+
+                        ${status !== 'delivered' ? `
+                            <button onclick="App.simulateNextStep()" class="mt-8 bg-secondary-highlight text-white py-3 px-6 rounded-xl font-semibold hover:bg-yellow-600 transition duration-200 shadow-lg">
+                                Simulate Next Status
+                            </button>
+                        ` : `
+                            <button onclick="App.clearOrder()" class="mt-8 bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition duration-200 shadow-lg">
+                                Order Complete! New Order?
+                            </button>
+                        `}
+                    </section>
+                `;
+            },
+            
+            getStepIcon(step) {
+                switch (step) {
+                    case 'accepted': return 'fa-check';
+                    case 'preparing': return 'fa-utensils';
+                    case 'on-the-way': return 'fa-motorcycle';
+                    case 'delivered': return 'fa-box-open';
+                    default: return 'fa-question';
+                }
+            },
+            
+            getIconPosition(status) {
+                switch (status) {
+                    case 'accepted': return 0;
+                    case 'preparing': return 33;
+                    case 'on-the-way': return 66;
+                    case 'delivered': return 100;
+                    default: return 0;
+                }
+            },
+
+            getStepMessage(status) {
+                switch (status) {
+                    case 'accepted': return 'Your order has been accepted by the restaurant!';
+                    case 'preparing': return 'The restaurant is now cooking your delicious meal.';
+                    case 'on-the-way': return 'Your FoodieExpress delivery partner is on the way!';
+                    case 'delivered': return 'Enjoy your meal! Order delivered.';
+                    default: return '';
+                }
+            },
+
+            startOrderTrackingAnimation() {
+                const steps = ['accepted', 'preparing', 'on-the-way', 'delivered'];
+                const currentStepIndex = steps.indexOf(this.state.orderStatus);
+
+                const progressBar = document.getElementById('progress-bar');
+                if (progressBar) {
+                    const percentage = currentStepIndex * (100 / (steps.length - 1));
+                    progressBar.style.width = `${percentage}%`;
+                }
+            },
+
+            simulateNextStep() {
+                const steps = ['accepted', 'preparing', 'on-the-way', 'delivered'];
+                const currentStepIndex = steps.indexOf(this.state.orderStatus);
+                
+                if (currentStepIndex < steps.length - 1) {
+                    this.state.orderStatus = steps[currentStepIndex + 1];
+                    this.render(); 
+                }
+            },
+
+            clearOrder() {
+                this.state.cart = {};
+                this.saveCart();
+                this.state.orderStatus = 'accepted';
+                this.setView('home');
+            },
+
+
+            // --- CART LOGIC ---
+            addToCart(item) {
+                const itemId = item.id;
+                
+                if (!this.state.cart[itemId]) {
+                    this.state.cart[itemId] = { item, quantity: 1 };
+                } else {
+                    const currentRestaurantId = Object.values(this.state.cart)[0]?.item?.restaurantId;
+                    if (currentRestaurantId && currentRestaurantId !== item.restaurantId) {
+                         this.showNotification("Cannot mix items from different restaurants!", 'error');
+                         return;
+                    }
+                    this.state.cart[itemId].quantity += 1;
+                }
+                
+                this.saveCart();
+                this.showNotification(`${item.name} added to cart!`, 'success');
+                this.render(); 
+            },
+
+            updateCartQuantity(itemId, delta) {
+                const cartItem = this.state.cart[itemId];
+
+                if (!cartItem) return;
+
+                cartItem.quantity += delta;
+
+                if (cartItem.quantity <= 0) {
+                    this.removeFromCart(itemId);
+                } else {
+                    this.saveCart();
+                    this.render();
+                }
+            },
+
+            removeFromCart(itemId) {
+                const name = this.state.cart[itemId].item.name;
+                delete this.state.cart[itemId];
+                this.saveCart();
+                this.showNotification(`${name} removed from cart.`, 'error');
+                this.render();
+            },
+
+            calculateCartTotal() {
+                return Object.values(this.state.cart).reduce((sum, entry) => 
+                    sum + (entry.item.price * entry.quantity), 0
+                );
+            },
+
+            updateCartCount() {
+                const count = Object.values(this.state.cart).reduce((sum, entry) => sum + entry.quantity, 0);
+                const countElement = document.getElementById('cartCount');
+                if (countElement) {
+                    countElement.textContent = count > 99 ? '99+' : count.toString();
+                    countElement.classList.toggle('hidden', count === 0);
+                }
+            },
+            
+            saveCart() {
+                localStorage.setItem('foodieExpressCart', JSON.stringify(this.state.cart));
+            },
+
+            handleCheckout(event) {
+                event.preventDefault();
+                
+                const form = event.target;
+                if (!form.checkValidity()) {
+                    this.showNotification("Please fill in all required fields.", 'error');
+                    return;
+                }
+
+                this.state.orderStatus = 'accepted';
+                openModal('orderConfirmationModal');
+
+                this.state.cart = {};
+                this.saveCart();
+            },
+
+            // --- UI NOTIFICATIONS (simple replacement for alert()) ---
+            showNotification(message, type) {
+                const area = document.getElementById('notification-area');
+                if (!area) return;
+
+                const color = type === 'success' ? 'bg-green-500' : 'bg-primary-red';
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                
+                const notification = document.createElement('div');
+                notification.className = `p-3 rounded-xl shadow-lg flex items-center text-white ${color} transition-all duration-300 transform translate-x-full opacity-0`;
+                notification.innerHTML = `<i class="fas ${icon} mr-2"></i> ${message}`;
+
+                area.appendChild(notification);
+
+                // Animate in
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full', 'opacity-0');
+                    notification.classList.add('translate-x-0', 'opacity-100');
+                }, 10);
+
+                // Animate out and remove
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-0', 'opacity-100');
+                    notification.classList.add('translate-x-full', 'opacity-0');
+                    notification.addEventListener('transitionend', () => notification.remove());
+                }, 3000);
+            }
+        };
+
+        // --- GLOBAL UTILITIES ---
+
+        function loadCart() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('foodieExpressCart'));
+                return cart || {};
+            } catch (e) {
+                console.error("Failed to load cart from storage:", e);
+                return {};
+            }
         }
-    },
-    placeOrder(){
-        if(this.cart.length===0){ alert('Cart is empty!'); return; }
-        this.clearCart();
-        document.getElementById('orderConfirmationModal').classList.remove('hidden');
-    }
-}
+        
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+        
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
 
-// Dark Mode Toggle
-document.getElementById('darkModeToggle').addEventListener('click',()=>{
-    document.body.classList.toggle('dark');
-    const icon=document.getElementById('darkModeIcon');
-    icon.classList.toggle('fa-moon');
-    icon.classList.toggle('fa-sun');
-});
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            App.init();
+        };
 
-// Close modal function
-function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
-
-App.render();
-</script>
+    </script>
 </body>
 </html>
